@@ -1,0 +1,94 @@
+/* Стили для мобильной версии — только SVG иконки, без текста */
+@media (max-width: 768px) {
+  /* Основные изменения для мобильных */
+  .v-toolbar__content {
+    padding: 16px;
+  }
+  
+  .v-toolbar__content h1 {
+    font-size: 1.3rem;
+  }
+  
+  .Vhod {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  
+  .search-container {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+  
+  .search-container input[type="text"] {
+    width: 100%;
+  }
+  
+  .action-buttons {
+    display: grid !important;
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 8px !important;
+    padding: 8px !important;
+    margin-top: 8px !important;
+    justify-content: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    width: fit-content !important;
+  }
+  
+  /* Кнопки в action-buttons — маленькие круглые с SVG иконками */
+  .action-buttons .btn-action {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 21px !important;
+    padding: 0 !important;
+    font-size: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: #007bff !important;
+    background-size: 18px 18px !important;
+    background-repeat: no-repeat !important;
+    background-position: center center !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+    margin: 0 auto !important;
+    border: none !important;
+    cursor: pointer !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+  
+  .action-buttons .btn-action:hover {
+    transform: none !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  .action-buttons .btn-export {
+    background-image: url('image/Export.svg') !important;
+    background-color: #10b981 !important;
+  }
+  
+  .action-buttons .btn-import {
+    background-image: url('image/Import.svg') !important;
+    background-color: #f59e0b !important;
+  }
+  
+  .action-buttons .btn-class {
+    background-image: url('image/Pencil.svg') !important;
+    background-color: #8b5cf6 !important;
+  }
+  
+  .action-buttons .btn-calendar {
+    background-image: url('image/Calendar.svg') !important;
+    background-color: #ec4899 !important;
+  }
+  
+  .action-buttons .btn-edit {
+    background-image: url('image/Pencil.svg') !important;
+    background-color: #ef4444 !important;
+  }
+}

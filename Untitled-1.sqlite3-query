@@ -1,0 +1,8 @@
+-- database: c:\Users\vladi\OneDrive\Desktop\vebka\blyha scoro 30.db
+
+-- Use the ▷ button in the top right corner to run the entire file.
+
+SELECT * FROM users;
+
+-- Обновление прав администратора для пользователей с polozenie = 'sverxy'
+UPDATE users SET isAdmin = 1 WHERE polozienie = 'sverxy';

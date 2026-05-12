@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Расписание занятий</title>
+  <link rel="stylesheet" href="/front/styleGlav.css" />
+  <!-- Подключение Font Awesome для иконок -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- Подключение jspdf для генерации PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- Подключение html2canvas для захвата HTML элементов -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link rel="stylesheet" href="/front/styleModal.css">
+  <link rel="stylesheet" href="/front/styleExport.css">
+</head>
+<body>
+
+<div class="v-toolbar__content">
+<h1>МОБУ Лицей №3</h1>
+
+<!-- Кнопка администратора в левом верхнем углу -->
+<div class="admin-panel" id="adminPanel" style="display: none;">
+    <button class="btn-admin-toggle" id="adminToggle" title="Панель администратора">
+        <i class="fa-solid fa-gear"></i>
+    </button>
+    <div class="admin-modal" id="adminModal">
+        <div class="admin-modal-content">
+            <span class="admin-close" id="adminClose">&times;</span>
+            <h3>Панель администратора</h3>
+            <button class="btn-admin-action" id="adminImportBtn">
+                <i class="fa-solid fa-file-import"></i> Импорт
+            </button>
+            <button class="btn-admin-action" id="adminEditBtn">
+                <i class="fa-solid fa-pen"></i> Редактировать
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="Vhod">
+    <div class="btn btn-vhod" id="themeToggle" title="Переключить тему">
+        <i class="fa-solid fa-moon"></i>
+    </div>
+    <div class="btn btn-vhod" id="authButton">
+        <i class="fa-solid fa-right-to-bracket"></i> Войти
+    </div>
+    <div class="btn btn-vhod" id="logoutButton" style="display: none;">
+        <i class="fa-solid fa-sign-out-alt"></i> Выйти
+    </div>
+</div>
+
+  <div class="search-container">
+      <div class="search-wrapper">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" placeholder="Поиск класса, преподавателя или кабинета" id="searchInput">
+      </div>
+      <button class="btn-search" id="searchBtn" title="Найти">
+        <i class="fa-solid fa-search"></i>
+      </button>
+    </div>
+
+    <!-- Info Cards -->
+<!-- <div class="kartochki"> -->
+    <div class="info-row">
+            <div class="info-card">
+        <h3>Класс</h3>
+        <p id="selectedClass">--/--</p>
+      </div>
+
+      <div class="info-card">
+        <h3>Четверть</h3>
+        <p><i class="fa-solid fa-cloud-sun-rain"></i> ну какаято</p>
+      </div>
+
+            <div class="info-card">
+        <h3>Учебный год</h3>
+        <p>2025-2026</p>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <div class="btn btn-action btn-export" id="exportButton" title="Скачать расписание в PDF">
+        <i class="fa-solid fa-file-export"></i> ЭКСПОРТ
+      </div>
+      <div class="btn btn-action btn-class" id="classButton" title="Выбрать класс">
+        <i class="fa-solid fa-users"></i> КЛАСС
+      </div>
+      <div class="btn btn-action btn-calendar" title="Календарь">
+        <i class="fa-solid fa-calendar"></i> КАЛЕНДАРЬ
+      </div>
+    </div>
+
+    <!-- Контейнер для результатов поиска -->
+    <div id="searchResultsContainer" class="search-results-container" style="display: none;"></div>
+</div>
+    <!-- Modal Window -->
+    <div id="classModal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="closeModal">&times;</span>
+        <h2>Выберите класс</h2>
+        <div class="class-selection">
+          <label for="classNumber">Номер класса:</label>
+          <select id="classNumber">
+            <option value="">--</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+          </select>
+
+          <label for="classLetter">Буква класса:</label>
+          <select id="classLetter">
+            <option value="">--</option>
+            <option value="а">а</option>
+            <option value="б">б</option>
+            <option value="в">в</option>
+            <option value="г">г</option>
+            <option value="д">д</option>
+
+          </select>
+
+          <button id="selectClassBtn">Выбрать</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Window Calendar -->
+    <div id="calendarModal" class="modal">
+      <div class="modal-content modal-calendar">
+        <span class="close" id="closeCalendar">&times;</span>
+        <h2><i class="fa-regular fa-calendar"></i> Календарь</h2>
+        <div class="calendar-body">
+          <div class="calendar-weeks-sidebar" id="calendarWeeksSidebar">
+            <h3>Недели</h3>
+            <div class="week-buttons-compact" id="weekButtonsCompact"></div>
+          </div>
+          <div class="calendar-main">
+            <div class="calendar-header">
+              <button class="calendar-nav" id="prevMonth">
+                <i class="fa-solid fa-chevron-left"></i>
+              </button>
+              <div class="calendar-month-year" id="monthYear"></div>
+              <button class="calendar-nav" id="nextMonth">
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+            <div class="calendar-grid" id="calendarGrid"></div>
+            <div class="calendar-actions-compact">
+              <button class="btn-calendar-today" id="calendarToday">
+                <i class="fa-solid fa-calendar-day"></i> Сегодня
+              </button>
+              <button class="btn-calendar-clear" id="calendarClear">
+                <i class="fa-solid fa-trash"></i> Очистить старое
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input for file upload (hidden) -->
+    <input type="file" id="fileInput" accept=".xlsx,.xls" style="display: none;" />
+
+    <!-- Чат-бот для уведомлений -->
+    <div class="chatbot-container">
+        <button class="chatbot-button" id="chatbotButton" title="Уведомления">
+            <i class="fa-solid fa-comment-dots"></i>
+            <span class="notification-badge hidden" id="chatbotBadge">0</span>
+        </button>
+        <div class="chatbot-window" id="chatbotWindow">
+            <div class="chatbot-header">
+                <div class="chatbot-header-title">
+                    <i class="fa-solid fa-bell"></i>
+                    Уведомления
+                </div>
+                <button class="chatbot-close" id="chatbotClose">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="chat-empty" id="chatbotEmpty">
+                    <i class="fa-regular fa-comment-dots"></i>
+                    <p>Нет новых уведомлений</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Days -->
+    <div id="scheduleContainer">
+      <!-- Пятница -->
+     
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="/back/import.js"></script>
+  <script src="/back/export.js"></script>
+  <script src="/back/edit.js"></script>
+  <script>
+    // Проверка авторизации и управление кнопками
+    document.addEventListener('DOMContentLoaded', function() {
+        const userData = localStorage.getItem('userData');
+        const authButton = document.getElementById('authButton');
+        const logoutButton = document.getElementById('logoutButton');
+        const exportButton = document.getElementById('exportButton');
+        const classButton = document.getElementById('classButton');
+        const fileInput = document.getElementById('fileInput');
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = themeToggle.querySelector('i');
+
+        // Элементы панели администратора
+        const adminPanel = document.getElementById('adminPanel');
+        const adminToggle = document.getElementById('adminToggle');
+        const adminModal = document.getElementById('adminModal');
+        const adminClose = document.getElementById('adminClose');
+        const adminImportBtn = document.getElementById('adminImportBtn');
+        const adminEditBtn = document.getElementById('adminEditBtn');
+
+        // Проверка сохраненной темы
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-theme');
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+        }
+
+        // Переключение темы
+        themeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('dark-theme');
+
+            if (document.body.classList.contains('dark-theme')) {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // Элементы модального окна класса
+        const classModal = document.getElementById('classModal');
+        const closeModal = document.getElementById('closeModal');
+        const selectClassBtn = document.getElementById('selectClassBtn');
+        const classNumber = document.getElementById('classNumber');
+        const classLetter = document.getElementById('classLetter');
+        const selectedClassText = document.getElementById('selectedClass');
+
+        if (userData) {
+            const parsedData = JSON.parse(userData);
+            // Скрыть кнопку входа и показать кнопку выхода
+            authButton.style.display = 'none';
+            logoutButton.style.display = 'block';
+
+            // Если пользователь администратор, показать панель администратора
+            if (parsedData.isAdmin) {
+                adminPanel.style.display = 'block';
+            }
+        } else {
+            // Показать кнопку входа, скрыть кнопку выхода
+            authButton.style.display = 'block';
+            logoutButton.style.display = 'none';
+        }
+
+        // Обработчик кнопки экспорта
+        exportButton.addEventListener('click', function() {
+            const selectedClass = localStorage.getItem('selectedClass');
+            if (!selectedClass || selectedClass === '--/--') {
+                alert('Пожалуйста, сначала выберите класс');
+                return;
+            }
+
+            exportToPDF(selectedClass);
+        });
+        
+        // Обработчик кнопки выбора класса
+        classButton.addEventListener('click', function() {
+            classModal.style.display = 'block';
+        });
+        
+        // Обработчик закрытия модального окна
+        closeModal.addEventListener('click', function() {
+            classModal.style.display = 'none';
+        });
+        
+        // Закрытие модального окна при клике вне его содержимого
+        window.addEventListener('click', function(event) {
+            if (event.target === classModal) {
+                classModal.style.display = 'none';
+            }
+        });
+        
+        // Обработчик выбора класса
+        selectClassBtn.addEventListener('click', function() {
+            const selectedNumber = classNumber.value;
+            const selectedLetter = classLetter.value;
+            
+            if (selectedNumber && selectedLetter) {
+                selectedClassText.textContent = selectedNumber + '/' + selectedLetter.toUpperCase();
+                classModal.style.display = 'none';
+                
+                // Сохранить выбранный класс в localStorage
+                localStorage.setItem('selectedClass', selectedNumber + '/' + selectedLetter.toUpperCase());
+                
+                // Загрузить сохраненное расписание для этого класса (если есть)
+                loadSavedScheduleForClass(selectedNumber + '/' + selectedLetter.toUpperCase());
+            } else {
+                alert('Пожалуйста, выберите номер и букву класса');
+            }
+        });
+        
+        // Загрузка сохраненного класса при загрузке страницы
+        const savedClass = localStorage.getItem('selectedClass');
+        if (savedClass) {
+            selectedClassText.textContent = savedClass;
+            classNumber.value = savedClass.split('/')[0];
+            classLetter.value = savedClass.split('/')[1].toLowerCase();
+            
+            // Загрузить сохраненное расписание для этого класса
+            loadSavedScheduleForClass(savedClass);
+        }
+        
+        // Обработчик кнопки входа
+        authButton.addEventListener('click', function() {
+            window.location.href = '/front/index.html';
+        });
+
+        // Обработчик кнопки выхода
+        logoutButton.addEventListener('click', function() {
+            // Очистить данные авторизации
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userData');
+            localStorage.removeItem('selectedClass');
+
+            // Перенаправить на страницу авторизации
+            window.location.href = '/front/index.html';
+        });
+
+        // Обработчики панели администратора
+        adminToggle.addEventListener('click', function() {
+            adminModal.classList.toggle('active');
+        });
+
+        adminClose.addEventListener('click', function() {
+            adminModal.classList.remove('active');
+        });
+
+        // Закрытие модального окна администратора при клике вне
+        document.addEventListener('click', function(event) {
+            if (!adminPanel.contains(event.target)) {
+                adminModal.classList.remove('active');
+            }
+        });
+
+        // Обработчик кнопки импорта в панели администратора
+        adminImportBtn.addEventListener('click', function() {
+            fileInput.click();
+            adminModal.classList.remove('active');
+        });
+
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Проверка имени файла
+                if (file.name.toLowerCase().includes('temka')) {
+                    importFromExcel(file);
+                } else {
+                    alert('Пожалуйста, выберите файл temka.xlsx');
+                }
+            }
+        });
+
+        // Обработчик кнопки редактирования в панели администратора
+        adminEditBtn.addEventListener('click', function() {
+            if (!editMode) {
+                enableEditMode();
+                adminEditBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Режим редактирования';
+                adminEditBtn.classList.add('active-edit');
+            } else {
+                disableEditMode();
+                adminEditBtn.innerHTML = '<i class="fa-solid fa-pen"></i> Редактировать';
+                adminEditBtn.classList.remove('active-edit');
+            }
+            adminModal.classList.remove('active');
+        });
+
+        // Обработчики поиска
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const searchResultsContainer = document.getElementById('searchResultsContainer');
+
+        // Поиск по нажатию на кнопку
+        if (searchBtn) {
+            searchBtn.addEventListener('click', performSearch);
+        }
+
+        // Поиск по нажатию Enter
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+        }
+
+        // Функция поиска
+        function performSearch() {
+            const query = searchInput.value.trim().toLowerCase();
+
+            if (!query) {
+                alert('Введите поисковый запрос');
+                return;
+            }
+
+            console.log('Поиск запроса:', query);
+
+            // Получаем все сохранённые расписания
+            const storedSchedules = JSON.parse(localStorage.getItem('storedSchedules') || '{}');
+            console.log('Сохранённые расписания:', storedSchedules);
+
+            const results = [];
+
+            // Ищем по всем классам
+            for (const className in storedSchedules) {
+                const schedule = storedSchedules[className];
+                const classResults = searchInSchedule(schedule, className, query);
+
+                if (classResults.length > 0) {
+                    results.push({
+                        className: className,
+                        lessons: classResults
+                    });
+                }
+            }
+
+            console.log('Результаты поиска:', results);
+
+            // Отображаем результаты
+            displaySearchResults(results, query);
+        }
+
+        // Поиск в расписании класса
+        function searchInSchedule(schedule, className, query) {
+            const results = [];
+
+            schedule.forEach(row => {
+                // Преобразуем все значения в строки
+                const day = String(row['день'] || '').toLowerCase();
+                const subject = String(row['предмет'] || '').toLowerCase();
+                const teacher = String(row['препод'] || '').toLowerCase();
+                const room = String(row['кабинет'] || '').toLowerCase();
+                const classValue = String(row['класс'] || className).toLowerCase();
+                const time = String(row['время'] || '').toLowerCase();
+                const date = String(row['дата'] || '').toLowerCase();
+
+                // Проверяем совпадения
+                const matchClass = classValue.includes(query);
+                const matchTeacher = teacher.includes(query);
+                const matchRoom = room.includes(query);
+                const matchSubject = subject.includes(query);
+                const matchDay = day.includes(query);
+                const matchTime = time.includes(query);
+
+                if (matchClass || matchTeacher || matchRoom || matchSubject || matchDay || matchTime) {
+                    results.push({
+                        day: row['день'] || '-',
+                        date: row['дата'] || '-',
+                        time: row['время'] || '-',
+                        subject: row['предмет'] || '-',
+                        teacher: row['препод'] || '-',
+                        room: row['кабинет'] || '-',
+                        matchType: matchClass ? 'class' : matchTeacher ? 'teacher' : matchRoom ? 'room' : 'subject'
+                    });
+                }
+            });
+
+            return results;
+        }
+
+        // Отображение результатов поиска
+        function displaySearchResults(results, query) {
+            let html = '';
+            
+            if (results.length === 0) {
+                html = `
+                    <div class="no-results">
+                        <i class="fa-solid fa-circle-exclamation" style="font-size: 3rem; margin-bottom: 16px;"></i>
+                        <p>Ничего не найдено по запросу "${query}"</p>
+                    </div>
+                    <button class="btn-close-search" id="closeSearchBtn">
+                        <i class="fa-solid fa-arrow-left"></i> Вернуться к расписанию
+                    </button>
+                `;
+            } else {
+                html = `
+                    <div class="search-results-header">
+                        <h2><i class="fa-solid fa-magnifying-glass"></i> Результаты поиска: "${query}"</h2>
+                        <button class="btn-close-search" id="closeSearchBtn">
+                            <i class="fa-solid fa-xmark"></i> Закрыть
+                        </button>
+                    </div>
+                `;
+
+                results.forEach(result => {
+                    const displayClassName = result.className.toUpperCase();
+                    html += `
+                        <div class="search-result-item" data-class="${result.className}">
+                            <div class="result-class">
+                                <i class="fa-solid fa-users"></i> Класс: ${displayClassName}
+                            </div>
+                    `;
+
+                    // Группируем по дням
+                    const groupedByDay = {};
+                    result.lessons.forEach(lesson => {
+                        if (!groupedByDay[lesson.day]) {
+                            groupedByDay[lesson.day] = [];
+                        }
+                        groupedByDay[lesson.day].push(lesson);
+                    });
+
+                    for (const day in groupedByDay) {
+                        html += `
+                            <div class="result-day">
+                                <i class="fa-regular fa-calendar"></i> ${day}
+                            </div>
+                        `;
+
+                        groupedByDay[day].forEach(lesson => {
+                            const highlightedSubject = highlightMatch(lesson.subject, query);
+                            const highlightedTeacher = highlightMatch(lesson.teacher, query);
+                            const highlightedRoom = highlightMatch(lesson.room, query);
+
+                            html += `
+                                <div class="result-lesson">
+                                    <span><i class="fa-regular fa-clock"></i> ${lesson.time}</span>
+                                    <span><i class="fa-solid fa-book"></i> ${highlightedSubject}</span>
+                                    <span><i class="fa-solid fa-user"></i> ${highlightedTeacher}</span>
+                                    <span><i class="fa-solid fa-location-dot"></i> ${highlightedRoom}</span>
+                                </div>
+                            `;
+                        });
+                    }
+
+                    html += `</div>`;
+                });
+            }
+
+            searchResultsContainer.innerHTML = html;
+            searchResultsContainer.style.display = 'block';
+
+            // Скрываем обычное расписание
+            document.getElementById('scheduleContainer').style.display = 'none';
+
+            // Обработчик кнопки закрытия
+            document.getElementById('closeSearchBtn').addEventListener('click', closeSearchResults);
+        }
+
+        // Подсветка совпадений
+        function highlightMatch(text, query) {
+            if (!text || !query) return String(text || '');
+            const textStr = String(text);
+            const regex = new RegExp(`(${query})`, 'gi');
+            return textStr.replace(regex, '<span class="highlight-match">$1</span>');
+        }
+
+        // Закрытие результатов поиска
+        function closeSearchResults() {
+            searchResultsContainer.style.display = 'none';
+            document.getElementById('scheduleContainer').style.display = 'block';
+            searchInput.value = '';
+        }
+        
+        // Функция загрузки сохраненного расписания для класса
+        function loadSavedScheduleForClass(className) {
+            // Нормализуем имя класса (убираем /)
+            const normalizedClassName = className.toLowerCase().replace(/[\/\-]/g, '');
+            const savedSchedule = loadScheduleFromLocalStorage(normalizedClassName);
+            if (savedSchedule) {
+                // Очистить текущее расписание
+                clearAllLessonLists();
+                clearAllDays();
+
+                // Добавить сохраненное расписание
+                addDaysAndLessonsFromExcel(savedSchedule);
+
+                console.log('Загружено сохраненное расписание для класса ' + className);
+            } else {
+                console.log('Расписание для класса ' + className + ' не найдено');
+            }
+        }
+
+        // Функция обновления расписания для текущего класса
+        function refreshCurrentSchedule() {
+            const currentClass = localStorage.getItem('selectedClass');
+            if (currentClass && currentClass !== '--/--') {
+                loadSavedScheduleForClass(currentClass);
+            }
+        }
+
+        // ==================== ЧАТ-БОТ ДЛЯ УВЕДОМЛЕНИЙ ====================
+        
+        // Элементы чат-бота
+        const chatbotButton = document.getElementById('chatbotButton');
+        const chatbotWindow = document.getElementById('chatbotWindow');
+        const chatbotClose = document.getElementById('chatbotClose');
+        const chatbotMessages = document.getElementById('chatbotMessages');
+        const chatbotEmpty = document.getElementById('chatbotEmpty');
+        const chatbotBadge = document.getElementById('chatbotBadge');
+
+        // Загрузка уведомлений из localStorage
+        function loadNotifications() {
+            const notifications = JSON.parse(localStorage.getItem('scheduleNotifications') || '[]');
+            return notifications;
+        }
+
+        // Сохранение уведомлений в localStorage
+        function saveNotifications(notifications) {
+            localStorage.setItem('scheduleNotifications', JSON.stringify(notifications));
+        }
+
+        // Добавление нового уведомления
+        function addNotification(title, message, className = '') {
+            const notifications = loadNotifications();
+            const now = new Date();
+            
+            const notification = {
+                id: Date.now(),
+                title: title,
+                message: message,
+                className: className,
+                time: now.toLocaleString('ru-RU', { 
+                    day: 'numeric', 
+                    month: 'long', 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                }),
+                isNew: true
+            };
+
+            notifications.unshift(notification);
+            
+            // Храним только последние 20 уведомлений
+            if (notifications.length > 20) {
+                notifications.splice(20);
+            }
+
+            saveNotifications(notifications);
+            updateChatbotUI();
+        }
+
+        // Обновление UI чат-бота
+        function updateChatbotUI() {
+            const notifications = loadNotifications();
+            const newNotifications = notifications.filter(n => n.isNew);
+            
+            // Обновляем бейдж
+            if (newNotifications.length > 0) {
+                chatbotBadge.textContent = newNotifications.length;
+                chatbotBadge.classList.remove('hidden');
+            } else {
+                chatbotBadge.classList.add('hidden');
+            }
+
+            // Отображаем сообщения
+            if (notifications.length === 0) {
+                chatbotMessages.innerHTML = `
+                    <div class="chat-empty">
+                        <i class="fa-regular fa-comment-dots"></i>
+                        <p>Нет новых уведомлений</p>
+                    </div>
+                `;
+            } else {
+                chatbotMessages.innerHTML = notifications.map(notification => `
+                    <div class="chat-message ${notification.isNew ? 'new' : ''}" data-id="${notification.id}">
+                        <div class="chat-message-header">
+                            <span class="chat-message-title">${notification.title}</span>
+                            <span class="chat-message-time">${notification.time}</span>
+                        </div>
+                        <div class="chat-message-body">
+                            ${notification.message}
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Отметить уведомления как прочитанные
+        function markNotificationsAsRead() {
+            const notifications = loadNotifications();
+            notifications.forEach(n => n.isNew = false);
+            saveNotifications(notifications);
+            updateChatbotUI();
+        }
+
+        // Отправка уведомления об изменении расписания
+        function notifyScheduleChange(className) {
+            const classNameUpper = className.toUpperCase().replace(/[\/\-]/g, '/');
+            addNotification(
+                '📚 Изменение расписания',
+                `Расписание для класса <strong>${classNameUpper}</strong> было изменено администратором.`,
+                className
+            );
+            
+            // Показываем уведомление
+            showNotificationPopup(classNameUpper);
+        }
+
+        // Всплывающее уведомление
+        function showNotificationPopup(className) {
+            const popup = document.createElement('div');
+            popup.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 24px;
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                color: white;
+                padding: 16px 20px;
+                border-radius: 12px;
+                box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+                z-index: 1001;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                animation: slideInRight 0.3s ease;
+            `;
+            popup.innerHTML = `
+                <i class="fa-solid fa-check-circle" style="font-size: 24px;"></i>
+                <div>
+                    <div style="font-weight: 700;">Расписание обновлено!</div>
+                    <div style="font-size: 14px; opacity: 0.9;">${className}</div>
+                </div>
+            `;
+            
+            document.body.appendChild(popup);
+            
+            setTimeout(() => {
+                popup.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => popup.remove(), 300);
+            }, 3000);
+        }
+
+        // Добавляем анимации для popup
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(100px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            @keyframes slideOutRight {
+                from {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateX(100px);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Обработчики чат-бота
+        chatbotButton.addEventListener('click', function() {
+            chatbotWindow.classList.toggle('active');
+            if (chatbotWindow.classList.contains('active')) {
+                markNotificationsAsRead();
+            }
+        });
+
+        chatbotClose.addEventListener('click', function() {
+            chatbotWindow.classList.remove('active');
+        });
+
+        // Закрытие чат-бота при клике вне
+        document.addEventListener('click', function(event) {
+            if (!chatbotWindow.contains(event.target) && !chatbotButton.contains(event.target)) {
+                chatbotWindow.classList.remove('active');
+            }
+        });
+
+        // Инициализация чат-бота
+        updateChatbotUI();
+        
+        // Делаем функцию доступной глобально
+        window.ть = notifyScheduleChange;
+
+        // ==================== КАЛЕНДАРЬ ====================
+        
+        // Элементы календаря
+        const calendarButton = document.querySelector('.btn-calendar');
+        const calendarModal = document.getElementById('calendarModal');
+        const closeCalendar = document.getElementById('closeCalendar');
+        const calendarGrid = document.getElementById('calendarGrid');
+        const monthYear = document.getElementById('monthYear');
+        const prevMonth = document.getElementById('prevMonth');
+        const nextMonth = document.getElementById('nextMonth');
+        const weekButtonsCompact = document.getElementById('weekButtonsCompact');
+        const calendarToday = document.getElementById('calendarToday');
+        const calendarClear = document.getElementById('calendarClear');
+
+        let currentDate = new Date();
+        let selectedDate = null;
+        let selectedWeekStart = null;
+
+        // Обработчик кнопки календаря
+        if (calendarButton) {
+            calendarButton.addEventListener('click', function() {
+                calendarModal.style.display = 'block';
+                renderCalendar(currentDate);
+                renderWeeks();
+            });
+        }
+
+        // Закрытие календаря
+        if (closeCalendar) {
+            closeCalendar.addEventListener('click', function() {
+                calendarModal.style.display = 'none';
+            });
+        }
+
+        // Закрытие при клике вне
+        window.addEventListener('click', function(event) {
+            if (event.target === calendarModal) {
+                calendarModal.style.display = 'none';
+            }
+        });
+
+        // Навигация по месяцам
+        prevMonth.addEventListener('click', function() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar(currentDate);
+            renderWeeks();
+        });
+
+        nextMonth.addEventListener('click', function() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar(currentDate);
+            renderWeeks();
+        });
+
+        // Кнопка "Сегодня"
+        calendarToday.addEventListener('click', function() {
+            currentDate = new Date();
+            selectedDate = new Date();
+            renderCalendar(currentDate);
+            renderWeeks();
+            filterScheduleByDate(selectedDate);
+        });
+
+        // Кнопка "Очистить старое"
+        calendarClear.addEventListener('click', function() {
+            cleanupOldSchedules();
+        });
+
+        // Рендеринг календаря
+        function renderCalendar(date) {
+            const year = date.getFullYear();
+            const month = date.getMonth();
+
+            const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+                              'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+
+            monthYear.textContent = `${monthNames[month]} ${year}`;
+
+            // Очищаем сетку
+            calendarGrid.innerHTML = '';
+
+            // Дни недели
+            const dayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+            dayNames.forEach(day => {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'calendar-day-name';
+                dayEl.textContent = day;
+                calendarGrid.appendChild(dayEl);
+            });
+
+            // Первый день месяца
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+
+            // Корректировка для понедельника (0 = Пн, 6 = Вс)
+            let startDay = firstDay.getDay() - 1;
+            if (startDay === -1) startDay = 6;
+
+            // Предыдущий месяц
+            const prevMonthLastDay = new Date(year, month, 0).getDate();
+            for (let i = startDay - 1; i >= 0; i--) {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'calendar-day other-month';
+                dayEl.textContent = prevMonthLastDay - i;
+                calendarGrid.appendChild(dayEl);
+            }
+
+            // Текущий месяц
+            const today = new Date();
+            const storedSchedules = JSON.parse(localStorage.getItem('storedSchedules') || '{}');
+            const scheduleDates = getScheduleDates(storedSchedules);
+
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'calendar-day';
+                dayEl.textContent = day;
+
+                const currentDay = new Date(year, month, day);
+
+                // Сегодня
+                if (currentDay.toDateString() === today.toDateString()) {
+                    dayEl.classList.add('today');
+                }
+
+                // Выбранный день
+                if (selectedDate && currentDay.toDateString() === selectedDate.toDateString()) {
+                    dayEl.classList.add('selected');
+                }
+
+                // Есть расписание
+                const dateKey = currentDay.toLocaleDateString('ru-RU');
+                if (scheduleDates.includes(dateKey)) {
+                    dayEl.classList.add('has-schedule');
+                }
+
+                // Клик по дню
+                dayEl.addEventListener('click', function() {
+                    selectedDate = currentDay;
+                    renderCalendar(currentDate);
+                    renderWeeks();
+                    filterScheduleByDate(currentDay);
+                });
+
+                calendarGrid.appendChild(dayEl);
+            }
+
+            // Следующий месяц
+            const totalCells = startDay + lastDay.getDate();
+            const remainingCells = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+            for (let day = 1; day <= remainingCells; day++) {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'calendar-day other-month';
+                dayEl.textContent = day;
+                calendarGrid.appendChild(dayEl);
+            }
+        }
+
+        // Получение всех дат с расписанием
+        function getScheduleDates(schedules) {
+            const dates = new Set();
+            for (const className in schedules) {
+                const schedule = schedules[className];
+                schedule.forEach(item => {
+                    if (item['дата']) {
+                        dates.add(item['дата']);
+                    }
+                });
+            }
+            return Array.from(dates);
+        }
+
+        // Рендеринг недель месяца
+        function renderWeeks() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            
+            // Корректировка для понедельника
+            let startDay = firstDay.getDay() - 1;
+            if (startDay === -1) startDay = 6;
+            
+            const weeks = [];
+            let currentWeek = [];
+            
+            // Дни предыдущего месяца
+            const prevMonthLastDay = new Date(year, month, 0).getDate();
+            for (let i = startDay - 1; i >= 0; i--) {
+                currentWeek.push(new Date(year, month - 1, prevMonthLastDay - i));
+            }
+            
+            // Дни текущего месяца
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                currentWeek.push(new Date(year, month, day));
+                
+                if (currentWeek.length === 7) {
+                    weeks.push(currentWeek);
+                    currentWeek = [];
+                }
+            }
+            
+            // Дни следующего месяца
+            while (currentWeek.length > 0 && currentWeek.length < 7) {
+                const nextMonthDay = new Date(year, month + 1, currentWeek.length + 1);
+                currentWeek.push(nextMonthDay);
+            }
+            if (currentWeek.length === 7) {
+                weeks.push(currentWeek);
+            }
+            
+            // Создаём кнопки недель
+            weekButtonsCompact.innerHTML = '';
+            const scheduleDates = getScheduleDates(JSON.parse(localStorage.getItem('storedSchedules') || '{}'));
+            
+            weeks.forEach((week, index) => {
+                const weekStart = week[0];
+                const weekEnd = week[6];
+                
+                const btn = document.createElement('button');
+                btn.className = 'week-btn-compact';
+                
+                // Проверяем, есть ли расписание в этой неделе
+                const hasSchedule = week.some(day => {
+                    const dateKey = day.toLocaleDateString('ru-RU');
+                    return scheduleDates.includes(dateKey);
+                });
+                
+                // Выбранная неделя
+                const isSelected = selectedWeekStart && 
+                    selectedWeekStart.toDateString() === weekStart.toDateString();
+                
+                if (isSelected) {
+                    btn.classList.add('active');
+                }
+                
+                if (!hasSchedule) {
+                    btn.classList.add('no-schedule');
+                }
+                
+                btn.innerHTML = `
+                    <span class="week-num">Неделя ${index + 1}</span>
+                    <span class="week-dates">${weekStart.getDate()}.${weekStart.getMonth()+1} - ${weekEnd.getDate()}.${weekEnd.getMonth()+1}</span>
+                `;
+                
+                btn.addEventListener('click', function() {
+                    selectedWeekStart = weekStart;
+                    renderWeeks();
+                    filterScheduleByWeek(week);
+                });
+                
+                weekButtonsCompact.appendChild(btn);
+            });
+        }
+
+        // Фильтрация расписания по дате
+        function filterScheduleByDate(date) {
+            const dateStr = date.toLocaleDateString('ru-RU');
+            const currentClass = localStorage.getItem('selectedClass');
+            
+            if (!currentClass) {
+                alert('Сначала выберите класс');
+                calendarModal.style.display = 'none';
+                return;
+            }
+            
+            const normalizedClass = currentClass.toLowerCase().replace(/[\/\-]/g, '');
+            const storedSchedules = JSON.parse(localStorage.getItem('storedSchedules') || '{}');
+            const schedule = storedSchedules[normalizedClass];
+            
+            if (!schedule) {
+                alert('Расписание для этого класса не найдено');
+                calendarModal.style.display = 'none';
+                return;
+            }
+            
+            // Фильтруем по дате
+            const filteredSchedule = schedule.filter(item => item['дата'] === dateStr);
+            
+            if (filteredSchedule.length === 0) {
+                alert(`Расписание на ${dateStr} не найдено`);
+            } else {
+                // Показываем расписание
+                clearAllDays();
+                displayFilteredSchedule(filteredSchedule, dateStr);
+                calendarModal.style.display = 'none';
+            }
+        }
+
+        // Фильтрация расписания по неделе
+        function filterScheduleByWeek(week) {
+            const currentClass = localStorage.getItem('selectedClass');
+            
+            if (!currentClass) {
+                alert('Сначала выберите класс');
+                calendarModal.style.display = 'none';
+                return;
+            }
+            
+            const normalizedClass = currentClass.toLowerCase().replace(/[\/\-]/g, '');
+            const storedSchedules = JSON.parse(localStorage.getItem('storedSchedules') || '{}');
+            const schedule = storedSchedules[normalizedClass];
+            
+            if (!schedule) {
+                alert('Расписание для этого класса не найдено');
+                calendarModal.style.display = 'none';
+                return;
+            }
+            
+            // Получаем даты недели в формате строки
+            const weekDates = week.map(day => day.toLocaleDateString('ru-RU'));
+            
+            // Фильтруем по датам недели
+            const filteredSchedule = schedule.filter(item => {
+                return weekDates.includes(item['дата']);
+            });
+            
+            if (filteredSchedule.length === 0) {
+                alert('Расписание на выбранную неделю не найдено');
+            } else {
+                // Показываем расписание
+                clearAllDays();
+                const weekStart = week[0].toLocaleDateString('ru-RU');
+                const weekEnd = week[6].toLocaleDateString('ru-RU');
+                displayFilteredSchedule(filteredSchedule, `${weekStart} - ${weekEnd}`);
+                calendarModal.style.display = 'none';
+            }
+        }
+
+        // Отображение отфильтрованного расписания
+        function displayFilteredSchedule(schedule, dateRange) {
+            // Группировка по дням
+            const groupedData = {};
+            
+            schedule.forEach(row => {
+                const day = row['день'] || 'Неизвестный день';
+                const date = row['дата'] || '-';
+                
+                if (!groupedData[day]) {
+                    groupedData[day] = {
+                        date: date,
+                        lessons: []
+                    };
+                }
+                
+                const timeFormatted = row['время'] ? row['время'].toString().replace(/\./g, '<br>') : '-';
+                
+                groupedData[day].lessons.push({
+                    time: timeFormatted,
+                    subject: row['предмет'] || '-',
+                    teacher: row['препод'] || '-',
+                    room: row['кабинет'] || '-'
+                });
+            });
+            
+            // Добавление дней и уроков
+            Object.keys(groupedData).forEach(day => {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'schedule-day';
+                
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'day-header';
+                
+                const dayName = document.createElement('div');
+                dayName.className = 'day-name';
+                dayName.textContent = day;
+                
+                const dayDate = document.createElement('div');
+                dayDate.className = 'day-date';
+                dayDate.textContent = groupedData[day].date;
+                
+                dayHeader.appendChild(dayName);
+                dayHeader.appendChild(dayDate);
+                
+                const lessonList = document.createElement('div');
+                lessonList.className = 'lesson-list';
+                
+                groupedData[day].lessons.forEach(lesson => {
+                    const lessonItem = document.createElement('div');
+                    lessonItem.className = 'lesson-item';
+                    
+                    const lessonTime = document.createElement('div');
+                    lessonTime.className = 'lesson-time orange';
+                    lessonTime.innerHTML = lesson.time;
+                    
+                    const lessonContent = document.createElement('div');
+                    lessonContent.className = 'lesson-content';
+                    
+                    const lessonTitle = document.createElement('div');
+                    lessonTitle.className = 'lesson-title';
+                    lessonTitle.textContent = lesson.subject;
+                    
+                    const lessonTeacher = document.createElement('div');
+                    lessonTeacher.className = 'lesson-meta';
+                    lessonTeacher.innerHTML = `<i class="fa-solid fa-user"></i><span class="lesson-teacher">преп. ${lesson.teacher}</span>`;
+                    
+                    const lessonRoom = document.createElement('div');
+                    lessonRoom.className = 'lesson-meta';
+                    lessonRoom.innerHTML = `<i class="fa-solid fa-location-dot"></i><span class="lesson-room">Аудитория: ${lesson.room}</span>`;
+                    
+                    lessonContent.appendChild(lessonTitle);
+                    lessonContent.appendChild(lessonTeacher);
+                    lessonContent.appendChild(lessonRoom);
+                    
+                    lessonItem.appendChild(lessonTime);
+                    lessonItem.appendChild(lessonContent);
+                    lessonList.appendChild(lessonItem);
+                });
+                
+                dayElement.appendChild(dayHeader);
+                dayElement.appendChild(lessonList);
+                document.getElementById('scheduleContainer').appendChild(dayElement);
+            });
+            
+            // Добавляем заголовок с диапазоном дат
+            const scheduleContainer = document.getElementById('scheduleContainer');
+            const headerTitle = document.createElement('div');
+            headerTitle.style.cssText = 'text-align: center; padding: 20px; font-size: 1.2rem; font-weight: 700; color: #3b82f6; margin-bottom: 20px;';
+            headerTitle.textContent = `📅 Расписание: ${dateRange}`;
+            scheduleContainer.insertBefore(headerTitle, scheduleContainer.firstChild);
+        }
+
+        // Автоудаление старого расписания (старше 2 месяцев)
+        function cleanupOldSchedules() {
+            const storedSchedules = JSON.parse(localStorage.getItem('storedSchedules') || '{}');
+            const now = new Date();
+            const twoMonthsAgo = new Date(now.setMonth(now.getMonth() - 2));
+            
+            let cleaned = 0;
+            
+            for (const className in storedSchedules) {
+                const schedule = storedSchedules[className];
+                const filteredSchedule = schedule.filter(item => {
+                    const itemDate = parseDate(item['дата']);
+                    return itemDate && itemDate >= twoMonthsAgo;
+                });
+                
+                if (filteredSchedule.length < schedule.length) {
+                    storedSchedules[className] = filteredSchedule;
+                    cleaned += schedule.length - filteredSchedule.length;
+                }
+            }
+            
+            localStorage.setItem('storedSchedules', JSON.stringify(storedSchedules));
+            
+            if (cleaned > 0) {
+                alert(`Удалено ${cleaned} устаревших записей расписания (старше 2 месяцев)`);
+                // Обновляем текущее расписание
+                const currentClass = localStorage.getItem('selectedClass');
+                if (currentClass) {
+                    loadSavedScheduleForClass(currentClass);
+                }
+            } else {
+                alert('Нет устаревших записей для удаления');
+            }
+        }
+
+        // Парсинг даты из строки
+        function parseDate(dateStr) {
+            if (!dateStr) return null;
+            
+            // Пытаемся распознать формат dd.mm.yyyy
+            if (dateStr.includes('.')) {
+                const parts = dateStr.split('.');
+                if (parts.length === 3) {
+                    return new Date(parts[2], parts[1] - 1, parts[0]);
+                }
+            }
+            
+            return new Date(dateStr);
+        }
+
+        // Очистка при загрузке страницы
+        cleanupOldSchedules();
+    });
+  </script>
+</body>
+</html>

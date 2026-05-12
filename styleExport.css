@@ -1,0 +1,87 @@
+/* Стили для временного контейнера PDF */
+#temp-pdf-container {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  width: 210mm; /* A4 ширина */
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: white;
+  font-family: Arial, sans-serif;
+  line-height: 1.4;
+}
+
+#temp-pdf-container h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #333;
+  font-weight: bold;
+}
+
+/* Стили для расписания в PDF */
+.schedule-day {
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  page-break-inside: avoid;
+}
+
+.day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #eee;
+}
+
+.day-name {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.day-date {
+  font-size: 14px;
+  color: #666;
+}
+
+.lesson-item {
+  display: flex;
+  margin-bottom: 8px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+}
+
+.lesson-time {
+  min-width: 60px;
+  margin-right: 10px;
+  text-align: center;
+  padding: 4px;
+  border-radius: 4px;
+  background-color: #e0e0e0;
+}
+
+.lesson-content {
+  flex-grow: 1;
+}
+
+.lesson-title {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.lesson-meta {
+  font-size: 12px;
+  color: #555;
+  margin-bottom: 2px;
+}
+
+.lesson-actions {
+  text-align: right;
+  flex-shrink: 0;
+  margin-left: 10px;
+}

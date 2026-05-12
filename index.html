@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет</title>
+    <link rel="stylesheet" href="/front/styleAvtoriz.css">
+    <!-- Подключение Font Awesome для иконок -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="header">
+            <i class="fas fa-user header-icon"></i>
+            Личный кабинет
+            <button class="theme-toggle" id="themeToggle" title="Переключить тему">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+        <div class="form-container">
+            <div id="error-message" class="error-message" style="display: none;"></div>
+            <div class="input-group">
+                <label class="input-label">Логин (email)</label>
+                <input type="text" id="username" class="input-field" placeholder="Введите email">
+                <i class="fas fa-user input-icon"></i>
+            </div>
+            <div class="input-group">
+                <label class="input-label">Пароль</label>
+                <input type="password" id="password" class="input-field" placeholder="Введите пароль">
+                <i class="fas fa-eye-slash input-icon toggle-password" id="togglePassword"></i>
+            </div>
+            <button class="login-button" id="loginButton">ВОЙТИ</button>
+        </div>
+    </div>
+
+    <script>
+        // Переключатель темы
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = themeToggle.querySelector('i');
+            const body = document.body;
+
+            // Проверка сохраненной темы
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                body.classList.add('dark-theme');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            }
+
+            // Переключение темы
+            themeToggle.addEventListener('click', function() {
+                body.classList.toggle('dark-theme');
+
+                if (body.classList.contains('dark-theme')) {
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    themeIcon.classList.remove('fa-sun');
+                    themeIcon.classList.add('fa-moon');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+
+            // Переключение видимости пароля
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                togglePassword.classList.toggle('fa-eye-slash');
+                togglePassword.classList.toggle('fa-eye');
+            });
+        });
+    </script>
+    <script src="/back/script.js"></script>
+</body>
+</html>

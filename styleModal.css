@@ -1,0 +1,483 @@
+/* Стили для модального окна */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background-color: white;
+  margin: 15% auto;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 400px;
+  position: relative;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: black;
+}
+
+.class-selection {
+  margin-top: 20px;
+}
+
+.class-selection label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.class-selection select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.class-selection button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.class-selection button:hover {
+  background-color: #0056b3;
+}
+
+.class-selection h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #333;
+}
+
+/* Темная тема для модального окна */
+body.dark-theme .modal-content {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+body.dark-theme .modal-content h2 {
+  color: #e2e8f0;
+}
+
+body.dark-theme .close {
+  color: #94a3b8;
+}
+
+body.dark-theme .close:hover {
+  color: #e2e8f0;
+}
+
+body.dark-theme .class-selection label {
+  color: #94a3b8;
+}
+
+body.dark-theme .class-selection select {
+  background-color: #0f172a;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+body.dark-theme .class-selection button {
+  background-color: #3b82f6;
+}
+
+body.dark-theme .class-selection button:hover {
+  background-color: #2563eb;
+}
+
+/* Стили для панели администратора */
+.admin-panel {
+  position: absolute;
+  left: 24px;
+  top: 24px;
+  z-index: 999;
+}
+
+.btn-admin-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.btn-admin-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.admin-modal {
+  display: none;
+  position: absolute;
+  top: 54px;
+  left: 0;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  min-width: 200px;
+  overflow: hidden;
+}
+
+.admin-modal-content {
+  padding: 15px;
+  position: relative;
+}
+
+.admin-modal-content h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 16px;
+  text-align: center;
+}
+
+.admin-close {
+  color: #aaa;
+  float: right;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.admin-close:hover {
+  color: #333;
+}
+
+.btn-admin-action {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-admin-action:last-child {
+  margin-bottom: 0;
+}
+
+#adminImportBtn {
+  background-color: #28a745;
+  color: white;
+}
+
+#adminImportBtn:hover {
+  background-color: #218838;
+}
+
+#adminEditBtn {
+  background-color: #007bff;
+  color: white;
+}
+
+#adminEditBtn:hover {
+  background-color: #0056b3;
+}
+
+.admin-modal.active {
+  display: block;
+}
+
+/* Темная тема для панели администратора */
+body.dark-theme .admin-modal-content {
+  background-color: #1e293b;
+}
+
+body.dark-theme .admin-modal-content h3 {
+  color: #e2e8f0;
+}
+
+body.dark-theme .admin-close {
+  color: #94a3b8;
+}
+
+body.dark-theme .admin-close:hover {
+  color: #e2e8f0;
+}
+
+/* Стили для календаря */
+.modal-calendar {
+  max-width: 650px;
+}
+
+.modal-calendar h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.calendar-body {
+  display: flex;
+  gap: 16px;
+}
+
+/* Боковая панель с неделями */
+.calendar-weeks-sidebar {
+  width: 140px;
+  flex-shrink: 0;
+}
+
+.calendar-weeks-sidebar h3 {
+  margin: 0 0 10px 0;
+  font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+body.dark-theme .calendar-weeks-sidebar h3 {
+  color: #94a3b8;
+}
+
+.week-buttons-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.week-buttons-compact::-webkit-scrollbar {
+  width: 4px;
+}
+
+.week-buttons-compact::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 2px;
+}
+
+.week-buttons-compact::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+body.dark-theme .week-buttons-compact::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+body.dark-theme .week-buttons-compact::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.week-btn-compact {
+  padding: 8px 10px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+body.dark-theme .week-btn-compact {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-color: #334155;
+}
+
+.week-btn-compact:hover {
+  border-color: #3b82f6;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+}
+
+body.dark-theme .week-btn-compact:hover {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+}
+
+.week-btn-compact.active {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border-color: #2563eb;
+}
+
+.week-btn-compact .week-num {
+  font-size: 0.85rem;
+}
+
+.week-btn-compact .week-dates {
+  font-size: 0.7rem;
+  opacity: 0.8;
+}
+
+.week-btn-compact.no-schedule {
+  opacity: 0.4;
+}
+
+/* Основная часть календаря */
+.calendar-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 8px;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  border-radius: 8px;
+}
+
+body.dark-theme .calendar-header {
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+}
+
+.calendar-month-year {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1e293b;
+  text-transform: capitalize;
+}
+
+body.dark-theme .calendar-month-year {
+  color: #e2e8f0;
+}
+
+.calendar-nav {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.calendar-nav:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.calendar-day-name {
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #64748b;
+  padding: 8px 0;
+}
+
+body.dark-theme .calendar-day-name {
+  color: #94a3b8;
+}
+
+.calendar-day {
+  text-align: center;
+  padding: 12px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+body.dark-theme .calendar-day {
+  color: #e2e8f0;
+}
+
+.calendar-day:hover {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+}
+
+body.dark-theme .calendar-day:hover {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+}
+
+.calendar-day.today {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.calendar-day.selected {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+}
+
+.calendar-day.other-month {
+  opacity: 0.3;
+}
+
+.calendar-day.has-schedule {
+  position: relative;
+}
+
+.calendar-day.has-schedule::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background: #10b981;
+  border-radius: 50%;
+}
+
+.calendar-actions-compact {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.calendar-actions-compact .btn-calendar-today,
+.calendar-actions-compact .btn-calendar-clear {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+}
